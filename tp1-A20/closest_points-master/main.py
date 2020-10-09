@@ -7,19 +7,24 @@ import csv
 
 from brute_force import execute_brute_force
 from DpR import execute_DpR
-from utils import GRID_SIZE
 
 
 def get_options():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--algo', help='either BF, DPR_ELEM and DPR_EXP')
-    parser.add_argument('--nb_points')
-    parser.add_argument('--file')
+    parser.add_argument(
+        '-a', '--algo', choices=['brute', 'recursif', 'seuil'], required=True)
+    parser.add_argument('-e', '--exemplaires',
+                        help='path to points file', required=True)
+    parser.add_argument('-p', '--petite-dist',
+                        help='affiche la plus petite distance entre deux points', default=False, action='store_true')
+    parser.add_argument('-t', '--temps', help='affiche le temps d’exécution en ms',
+                        default=False, action='store_true')
 
     args = parser.parse_args()
-    print("Chosen arguments are: ", args.algo, args.nb_points, args.file)
+    print("Chosen arguments are: ", args)
 
     return args
+
 
 def read_points_from_file(filename):
     with open(filename, 'r') as f:
@@ -28,13 +33,6 @@ def read_points_from_file(filename):
 
     return nb_points, points
 
-'''
-Un point est représenté par un tuple (position_x, position_y)
-La fonction generate_points génère une liste de N points.
-'''
-def generate_points(N):
-    points = [(random.randint(0, GRID_SIZE), random.randint(0, GRID_SIZE)) for i in range(N)]
-    return points
 
 '''
 --------------------------------------------------------------------
@@ -46,7 +44,8 @@ compatible avec ce code (par exemple l'utilisation de flag -e, -a, (p et -t)).
 --------------------------------------------------------------------
  '''
 
-def main(algo=None, nb_points=0, file=None):
+
+def main(algo, file, print_distance=False, print_time=False):
 
     if file != None:
         nb_points, POINTS = read_points_from_file(file)
@@ -57,31 +56,27 @@ def main(algo=None, nb_points=0, file=None):
     sorted_points_x = sorted(POINTS, key=lambda x: x[0])
     sorted_points_y = sorted(POINTS, key=lambda x: x[1])
 
-    if algo == "BF":
-        time_BF = execute_brute_force(sorted_points_x)
-        print("Temps : ", time_BF)
+    if algo == "brute":
+        distance, time = execute_brute_force(sorted_points_x)
 
-    elif algo == "DPR_ELEM":
+    elif algo == "recursif":
         SEUIL_DPR = 3
-        time_DPR = execute_DpR(sorted_points_x, sorted_points_y, SEUIL_DPR)
-        print("Temps : ", time_DPR)
+        distance, time = execute_DpR(
+            sorted_points_x, sorted_points_y, SEUIL_DPR)
 
-    elif algo == "DPR_EXP":
+    elif algo == "seuil":
         SEUIL_DPR = 10
-        time_DPR = execute_DpR(sorted_points_x, sorted_points_y, SEUIL_DPR)
-        print("Temps : ", time_DPR)
+        distance, time = execute_DpR(
+            sorted_points_x, sorted_points_y, SEUIL_DPR)
 
-    else:
-        time_BF = execute_brute_force(sorted_points_x)
-        print("Temps : ", time_BF)
-        time_DPR = execute_DpR(sorted_points_x, sorted_points_y, 3)
-        print("Temps : ", time_DPR)
-        time_DPR = execute_DpR(sorted_points_x, sorted_points_y, 10)
-        print("Temps : ", time_DPR)
+    if print_time:
+        print("Temps : ", time)
 
+    if print_distance:
+        print("Distance : ", distance)
 
 
 if __name__ == '__main__':
     args = get_options()
 
-    main(args.algo, args.nb_points, args.file)
+    main(args.algo, args.exemplaires, args.petite_dist, args.temps)
