@@ -1,3 +1,5 @@
+"""[Source]: https://github.com/AliceB08/closest_points"""
+
 import sys
 import time
 from utils import MAX_DIST, distance

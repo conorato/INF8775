@@ -1,3 +1,7 @@
+"""
+Slightly modified to take the required command line arguments
+[Source]: https://github.com/AliceB08/closest_points
+"""
 import argparse
 import random
 import math
