@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # ./executable "$@"
-python closest_points-master/main.py "$@"
+python closest_points/main.py "$@"

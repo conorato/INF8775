@@ -5,8 +5,8 @@ import sys
 import time
 import csv
 
-from brute_force import execute_brute_force
-from DpR import execute_DpR
+from closest_points.brute_force import execute_brute_force
+from closest_points.DpR import execute_DpR
 
 
 def get_options():
@@ -21,7 +21,6 @@ def get_options():
                         default=False, action='store_true')
 
     args = parser.parse_args()
-    print("Chosen arguments are: ", args)
 
     return args
 
@@ -60,20 +59,22 @@ def main(algo, file, print_distance=False, print_time=False):
         distance, time = execute_brute_force(sorted_points_x)
 
     elif algo == "recursif":
-        SEUIL_DPR = 3
+        SEUIL_DPR = 3   # choisi arbitrairement
         distance, time = execute_DpR(
             sorted_points_x, sorted_points_y, SEUIL_DPR)
 
     elif algo == "seuil":
-        SEUIL_DPR = 10
+        SEUIL_DPR = 8   # choisi par essai-erreur
         distance, time = execute_DpR(
             sorted_points_x, sorted_points_y, SEUIL_DPR)
 
     if print_time:
-        print("Temps : ", time)
+        print(time)
 
     if print_distance:
-        print("Distance : ", distance)
+        print(distance)
+
+    return time
 
 
 if __name__ == '__main__':

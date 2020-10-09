@@ -1,8 +1,8 @@
 import sys
 import time
-from utils import MAX_DIST, distance
+from closest_points.utils import MAX_DIST, distance
 
-from brute_force import brute_force
+from closest_points.brute_force import brute_force
 sys.setrecursionlimit(1500)
 
 
@@ -15,7 +15,6 @@ def find_min_strip(points_y, d):
     return strip_min
 
 
-
 '''
 Algorithme Diviser pour Régner pour résoudre le problème.
 Un point est représenté par un typle (position_x, position_y).
@@ -24,6 +23,8 @@ points_x contient la liste des points triés sur l'axe des abscisses.
 points_y contient la liste des points triés sur l'axe des ordonnées.
 seuil_recur est le seuil à partir duquel on utilie l'algo force brute.
 '''
+
+
 def DpR(points_x, points_y, seuil_recur):
     nb_points = len(points_x)
 
@@ -64,6 +65,7 @@ def DpR(points_x, points_y, seuil_recur):
     min_dist = min(d, min_strip)
 
     return min_dist
+
 
 def execute_DpR(sorted_points_x, sorted_points_y, seuil_recur):
     start = time.time()

@@ -1,10 +1,12 @@
 import time
-from utils import MAX_DIST, distance
+from closest_points.utils import MAX_DIST, distance
 
 '''
 Algorithme Force Brute
 Si le nombre de points est suffisamment petit, on préfère utiliser cet algorithme.
 '''
+
+
 def brute_force(points):
     dist_min = MAX_DIST
     for pos, pt1 in enumerate(points):
