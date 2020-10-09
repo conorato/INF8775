@@ -1,8 +1,8 @@
 import sys
 import time
-from closest_points.utils import MAX_DIST, distance
+from utils import MAX_DIST, distance
 
-from closest_points.brute_force import brute_force
+from brute_force import brute_force
 sys.setrecursionlimit(1500)
 
 

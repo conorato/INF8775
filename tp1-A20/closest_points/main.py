@@ -5,8 +5,8 @@ import sys
 import time
 import csv
 
-from closest_points.brute_force import execute_brute_force
-from closest_points.DpR import execute_DpR
+from brute_force import execute_brute_force
+from DpR import execute_DpR
 
 
 def get_options():
@@ -45,13 +45,7 @@ compatible avec ce code (par exemple l'utilisation de flag -e, -a, (p et -t)).
 
 
 def main(algo, file, print_distance=False, print_time=False):
-
-    if file != None:
-        nb_points, POINTS = read_points_from_file(file)
-    else:
-        nb_points = int(nb_points)
-        POINTS = generate_points(nb_points)
-
+    nb_points, POINTS = read_points_from_file(file)
     sorted_points_x = sorted(POINTS, key=lambda x: x[0])
     sorted_points_y = sorted(POINTS, key=lambda x: x[1])
 
@@ -69,7 +63,7 @@ def main(algo, file, print_distance=False, print_time=False):
             sorted_points_x, sorted_points_y, SEUIL_DPR)
 
     if print_time:
-        print(time)
+        print(time * 1000)  # display in ms
 
     if print_distance:
         print(distance)
