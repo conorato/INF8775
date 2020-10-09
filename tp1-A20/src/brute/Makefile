@@ -1,4 +1,4 @@
-EXEC=closests_points											# Executable to create
+EXEC=closests_points.out											# Executable to create
 
 ############ 	Variables	 	 ############
 
