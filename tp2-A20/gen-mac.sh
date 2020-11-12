@@ -1,7 +1,8 @@
 for n in {100,500,1000,5000,10000,50000,100000}; do
   echo "generating for $n samples"
   for i in {1..10}; do
-    shuf -i 1-$((3*$n)) |
+    # Génération d'une permutation de 1 à 3n
+    gshuf -i 1-$((3*$n)) |
     awk 'BEGIN {i=0} {printf $1; if (++i%3==0) printf "\n"; else printf " "}' |
     awk '{
       printf $1; if ($2 < $3) print " "$2" "$3; else print " "$3" "$2;
