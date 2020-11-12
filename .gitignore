@@ -1,7 +1,10 @@
 .DS_Store
-~*.odt
+~*.odt*
+.~*.odt*
 .vscode
-data/
+*.csv
+*.xlsx
+*.txt
 
 *.out
 *.o

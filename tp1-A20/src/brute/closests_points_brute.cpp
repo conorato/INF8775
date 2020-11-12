@@ -36,10 +36,31 @@ float closest(Point P[], int n)
 	return min;
 }
 
-int main()
+Point * readFile(string filename)
 {
-	Point P[] = {{2, 3}, {12, 30}, {40, 50}, {5, 1}, {12, 10}, {3, 4}};
-	int n = sizeof(P) / sizeof(P[0]);
-	cout << "The smallest distance is " << closest(P, n) << endl;
+  string line;
+  ifstream myfile = ifstream(filename);
+  if (myfile.is_open())
+  {
+    while ( getline (myfile,line) )
+    {
+      cout << line << '\n';
+    }
+    myfile.close();
+  }
+}
+
+int main(int argc, char *argv[])
+{
+  if (argc == 1)
+  {
+    Point P[] = {{2, 3}, {12, 30}, {40, 50}, {5, 1}, {12, 10}, {3, 4}};
+    int n = sizeof(P) / sizeof(P[0]);
+    cout << "The smallest distance is " << closest(P, n) << endl;
+  }
+  else
+  {
+    cout << "You must put into args only the input file path" << endl;
+  }
 	return 0;
 }
