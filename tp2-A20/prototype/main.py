@@ -35,14 +35,13 @@ def get_options():
 
 def read_blocs_from_file(filename):
     with open(filename, 'r') as f:
-        nb_points = f.readline()
         points = [[int(n) for n in line.split()] for line in f]
 
-    return nb_points, points
+    return points
 
 
 def main(algo, file, print_path=False, print_height=False, print_time=False):
-    nb_blocs, blocs = read_blocs_from_file(file)
+    blocs = read_blocs_from_file(file)
 
     if algo == "vorace":
         path, height, time = execute_greedy(blocs)
@@ -57,7 +56,7 @@ def main(algo, file, print_path=False, print_height=False, print_time=False):
         print(time * 1000)  # display in ms
 
     if print_path:
-        print(path)
+        print(*path, sep='\n')
 
     if print_height:
         print(height)

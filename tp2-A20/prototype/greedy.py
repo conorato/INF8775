@@ -5,6 +5,8 @@ Where a bloc is defined by its (height, width, depth) (which corresponds to (hau
 """
 import time
 
+from utils import is_stricly_smaller
+
 
 def execute_greedy(blocs):
     s = time.time()
@@ -26,7 +28,7 @@ def _execute_greedy(blocs):
 
     for bloc in blocs[1:]:
         reveiving_bloc = path[-1]
-        if bloc[1] < reveiving_bloc[1] and bloc[2] < reveiving_bloc[2]:
+        if is_stricly_smaller(bloc, receiving_bloc):
             path.append(bloc)
 
     return path
