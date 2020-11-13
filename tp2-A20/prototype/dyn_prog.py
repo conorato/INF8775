@@ -27,7 +27,11 @@ def _execute_dyn_prog(blocs):
 
         for index, bloc in enumerate(current_blocs):
             receiving_bloc_index = _find_bigger_bloc(
-                current_blocs, bloc, index)
+                current_blocs,
+                bloc,
+                index,
+                tower_height[current_threshold_index:]
+            )
 
             if receiving_bloc_index is not None:
                 abs_bloc_idx = current_threshold_index + index
@@ -45,7 +49,7 @@ def _execute_dyn_prog(blocs):
     return tower_sequence[tallest_tower_base_index]
 
 
-def _find_bigger_bloc(blocs, bloc, index):
+def _find_bigger_bloc(blocs, bloc, index, current_tower_heights):
     bigger_surface_bloc_indexes = [
         idx
         for idx, receiving_bloc in enumerate(blocs[:index])
@@ -56,6 +60,8 @@ def _find_bigger_bloc(blocs, bloc, index):
         return None
 
     highest_tower_idx = max(
-        bigger_surface_bloc_indexes, key=lambda i: blocs[i])
+        bigger_surface_bloc_indexes,
+        key=lambda i: current_tower_heights[i]
+    )
 
     return highest_tower_idx
