@@ -9,6 +9,7 @@ import math
 import sys
 import time
 import csv
+import numpy as np
 
 from greedy import execute_greedy
 from dyn_prog import execute_dyn_prog
@@ -35,9 +36,9 @@ def get_options():
 
 def read_blocs_from_file(filename):
     with open(filename, 'r') as f:
-        points = [[int(n) for n in line.split()] for line in f]
+        blocs = [[int(n) for n in line.split()] for line in f]
 
-    return points
+    return np.array(blocs)
 
 
 def main(algo, file, print_path=False, print_height=False, print_time=False):

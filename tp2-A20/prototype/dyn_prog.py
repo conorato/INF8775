@@ -1,4 +1,5 @@
 import time
+import numpy as np
 
 from utils import is_stricly_smaller, get_surface, arg_max
 
@@ -16,13 +17,14 @@ def execute_dyn_prog(blocs):
 
 def _execute_dyn_prog(blocs):
     """finds sequence of blocs in order to get the biggest tower height"""
-    blocs.sort(key=get_surface, reverse=True)
 
-    tower_height = [bloc[0] for bloc in blocs]
+    blocs = _order_blocs_by_decreasing_surface(blocs)
+
+    tower_height = blocs[:, 0].copy()
     tower_sequence = [[bloc] for bloc in blocs]
 
     current_threshold_index = 0
-    while current_threshold_index != len(blocs):
+    while current_threshold_index != blocs.shape[0]:
         current_blocs = blocs[current_threshold_index:]
 
         for index, bloc in enumerate(current_blocs):
@@ -37,6 +39,9 @@ def _execute_dyn_prog(blocs):
                 abs_bloc_idx = current_threshold_index + index
                 abs_receiving_bloc_idx = current_threshold_index + receiving_bloc_index
 
+                print(
+                    f"Bloc {abs_bloc_idx} will be added to the tower sequence {tower_sequence[abs_receiving_bloc_idx]} of receiving index {abs_receiving_bloc_idx}")
+
                 tower_height[abs_bloc_idx] = tower_height[abs_receiving_bloc_idx] + bloc[0]
                 tower_sequence[abs_bloc_idx] = tower_sequence[abs_receiving_bloc_idx] + [bloc]
             else:
@@ -49,14 +54,20 @@ def _execute_dyn_prog(blocs):
     return tower_sequence[tallest_tower_base_index]
 
 
-def _find_bigger_bloc(blocs, bloc, index, current_tower_heights):
-    bigger_surface_bloc_indexes = [
-        idx
-        for idx, receiving_bloc in enumerate(blocs[:index])
-        if is_stricly_smaller(bloc, receiving_bloc)
-    ]
+def _order_blocs_by_decreasing_surface(blocs):
+    surface_blocs = blocs[:, 1] * blocs[:, 2]
+    return blocs[np.argsort(surface_blocs)[::-1]]
 
-    if len(bigger_surface_bloc_indexes) == 0:
+
+def _find_bigger_bloc(blocs, bloc, index, current_tower_heights):
+    bigger_or_equal_surface_blocs = blocs[:index]
+
+    bigger_surface_bloc_indexes = np.argwhere(
+        (bloc[1] < bigger_or_equal_surface_blocs[:, 1])
+        & (bloc[2] < bigger_or_equal_surface_blocs[:, 2])
+    ).flatten()
+
+    if bigger_surface_bloc_indexes.shape[0] == 0:
         return None
 
     highest_tower_idx = max(

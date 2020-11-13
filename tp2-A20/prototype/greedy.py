@@ -4,7 +4,7 @@ width_newbloc < width_receivingbloc and depth_newbloc < depth_receivingbloc
 Where a bloc is defined by its (height, width, depth) (which corresponds to (hauteur, longueur, profondeur))
 """
 import time
-
+import numpy as np
 from utils import is_stricly_smaller
 
 
@@ -22,7 +22,10 @@ def execute_greedy(blocs):
 def _execute_greedy(blocs):
     """finds sequence of blocs in order to get the biggest tower height"""
     path = []
-    blocs.sort(key=_get_height_surface_ratio, reverse=True)
+
+    # order blocs by their decreasing surface to height ratio
+    surface_height_blocs = blocs[:, 0] * blocs[:, 1] * blocs[:, 2]
+    blocs = blocs[np.argsort(surface_height_blocs)[::-1]]
 
     path.append(blocs[0])
 
