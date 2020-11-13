@@ -10,6 +10,8 @@ import sys
 import time
 import csv
 import numpy as np
+import time
+
 
 from greedy import execute_greedy
 from dyn_prog import execute_dyn_prog
@@ -45,22 +47,24 @@ def main(algo, file, print_path=False, print_height=False, print_time=False):
     blocs = read_blocs_from_file(file)
 
     if algo == "vorace":
-        path, height, time = execute_greedy(blocs)
+        path, total_time = execute_greedy(blocs)
 
     elif algo == "progdyn":
-        path, height, time = execute_dyn_prog(blocs)
+        s = time.time()
+        path = execute_dyn_prog(blocs)
+        total_time = time.time() - s
 
     elif algo == "tabou":
-        path, height, time = execute_tabou(blocs)
+        path, height, total_time = execute_tabou(blocs)
 
     if print_time:
-        print(time * 1000)  # display in ms
+        print(total_time * 1000)  # display in ms
 
     if print_path:
         print(*path, sep='\n')
 
     if print_height:
-        print(height)
+        print(np.array(path)[:, 0].sum())
 
     return time
 

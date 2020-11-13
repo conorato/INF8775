@@ -1,17 +1,12 @@
-import time
 import numpy as np
 from numba import jit
 
 
+@jit(nopython=True)
 def execute_dyn_prog(blocs):
-    s = time.time()
-
     path = _execute_dyn_prog(blocs)
 
-    total_time = time.time() - s
-    height = sum([bloc[0] for bloc in path])
-
-    return path, height, total_time
+    return path
 
 
 @jit(nopython=True)

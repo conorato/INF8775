@@ -14,9 +14,8 @@ def execute_greedy(blocs):
     path = _execute_greedy(blocs)
 
     total_time = time.time() - s
-    height = sum([bloc[0] for bloc in path])
 
-    return path, height, total_time
+    return path, total_time
 
 
 def _execute_greedy(blocs):
