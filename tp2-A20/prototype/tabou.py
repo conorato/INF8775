@@ -1,6 +1,6 @@
 import numpy as np
 
-STOP_CRITERIA = 100
+STOP_CRITERIA = 4
 MIN_TABOU = 7
 MAX_TABOU = 10
 
@@ -20,11 +20,12 @@ def _execute_tabou(candidates):
     nb_iter_without_improvement = 0
 
     while nb_iter_without_improvement < STOP_CRITERIA:
-        current_candidate, current_solution_height = _get_candidate(
+        current_candidate, current_solution_height, best_candidate_idx = _get_candidate(
             candidates,
             current_solution,
             current_solution_height
         )
+        # print('current solution height: ', current_solution_height)
         current_solution, imcompatible_blocs = _update_solution(
             current_candidate,
             current_solution
@@ -34,9 +35,12 @@ def _execute_tabou(candidates):
             tabous,
             candidates
         )
+        candidates = np.delete(candidates, best_candidate_idx, axis=0)
 
         # if is_current_solution_better(current_solution, best_solution):
         if best_solution is None or current_solution_height > best_solution[:, 0].sum():
+            # print('cur solution: ', current_solution)
+            # print('current_candidate: ', current_candidate)
             best_solution = current_solution
             nb_iter_without_improvement = 0
         else:
@@ -49,8 +53,9 @@ def _get_candidate(candidates, current_solution, current_solution_height):
     """step 1: determine the candidate which maximises current solution's height"""
     best_candidate = None
     best_candidate_tower_height = 0
+    best_candidate_idx = -1
 
-    for candidate in candidates:
+    for idx, candidate in enumerate(candidates):
         height_to_remove = _get_height_to_remove(
             current_solution, candidate)
         candidate_tower_height = (
@@ -60,16 +65,20 @@ def _get_candidate(candidates, current_solution, current_solution_height):
         if candidate_tower_height > best_candidate_tower_height:
             best_candidate = candidate
             best_candidate_tower_height = candidate_tower_height
+            best_candidate_idx = idx
 
-    return best_candidate, best_candidate_tower_height
+    return best_candidate, best_candidate_tower_height, best_candidate_idx
 
 
 def _get_blocs_to_remove(current_solution, candidate):
     """returns array of size len(current_solution) with True at positions of blocs to remove"""
-    bigger_width_indexes = current_solution[:, 1] >= candidate[1]
+    bigger_width_indexes = current_solution[:, 1] > candidate[1]
     bigger_depth_indexes = current_solution[:, 2] > candidate[2]
 
-    return bigger_width_indexes ^ bigger_depth_indexes
+    are_all_false = bigger_width_indexes.sum() == 0 or bigger_depth_indexes.sum() == 0
+    # print('are all false: ', are_all_false)
+
+    return np.ones(len(bigger_width_indexes), dtype=np.bool_) if are_all_false else ~(bigger_width_indexes & bigger_depth_indexes)
 
 
 def _get_height_to_remove(current_solution, candidate):
@@ -89,13 +98,14 @@ def _update_solution(candidate, current_solution):
 
     blocs_to_remove = _get_blocs_to_remove(current_solution, candidate)
 
+    # print('blocs to remove: ', np.where(blocs_to_remove))
     # remove imcompatible
     imcompatible_blocs = updated_solution[blocs_to_remove]
     updated_solution = updated_solution[~blocs_to_remove]
     # insert new bloc
     position_to_insert_bloc = np.where(blocs_to_remove)[0]
     position_to_insert_bloc = position_to_insert_bloc[0] if len(
-        position_to_insert_bloc) != 0 else 0
+        position_to_insert_bloc) > 0 else 0
     updated_solution = np.insert(
         updated_solution, position_to_insert_bloc, candidate, axis=0)
 
