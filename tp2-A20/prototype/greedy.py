@@ -27,7 +27,7 @@ def _execute_greedy(blocs):
     path.append(blocs[0])
 
     for bloc in blocs[1:]:
-        reveiving_bloc = path[-1]
+        receiving_bloc = path[-1]
         if is_stricly_smaller(bloc, receiving_bloc):
             path.append(bloc)
 
