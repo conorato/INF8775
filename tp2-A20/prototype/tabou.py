@@ -1,7 +1,8 @@
-from collections import deque
 import numpy as np
 
 STOP_CRITERIA = 100
+MIN_TABOU = 7
+MAX_TABOU = 10
 
 
 def execute_tabou(blocs):
@@ -11,10 +12,10 @@ def execute_tabou(blocs):
 
 
 def _execute_tabou(candidates):
-    current_solution = deque()
+    current_solution = np.array([])
     current_solution_height = 0
     best_solution = None
-    tabous = []
+    tabous = [[] for _ in range(MAX_TABOU)]
 
     nb_iter_without_improvement = 0
 
@@ -97,26 +98,34 @@ def _update_solution(candidate, current_solution):
     return updated_solution, imcompatible_blocs
 
 
-def _update_tabous(new_tabous, tabous):
+def _update_tabous(new_tabous, tabous, candidates):
     """
     step 3: we transfer these incompatible blocs into the tabou list while associating a time to live
     step 4: we update the time to live of blocs in the tabou list and transfer the elements with 0 TTL to C
     """
     updated_tabous = tabous.copy()
 
-    updated_candidates = _update_time_to_live()
-    updated_tabous = _add_new_tabous()
+    updated_tabous, candidates_to_reinsert = _update_time_to_live(
+        updated_tabous)
+    updated_tabous = _add_new_tabous(new_tabous, updated_tabous)
 
     return updated_tabous, updated_candidates
 
 
-def _update_time_to_live():
-    return []
+def _update_time_to_live(updated_tabous):
+    candidates_to_reinsert = updated_tabous[0]
+    updated_tabous = updated_tabous[1:]
+    updated_tabous.append([])
+
+    return updated_tabous, candidates_to_reinsert
 
 
-def _add_new_tabous():
-    return []
+def _add_new_tabous(new_tabous, tabous):
+    for new_tabou in new_tabous:
+        new_tabou_time_to_live = np.random.randint(MIN_TABOU, MAX_TABOU+1)
+        tabous[new_tabou_time_to_live].append(new_tabous)
+    return tabous
 
 
 def is_current_solution_better(current_solution, best_solution):
-    return False
+    return current_solution[:, 0].sum() > best_solution[:, 0].sum()
