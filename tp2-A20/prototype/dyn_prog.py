@@ -23,31 +23,20 @@ def _execute_dyn_prog(blocs):
     tower_height = blocs[:, 0].copy()
     tower_sequence = [[bloc] for bloc in blocs]
 
-    current_threshold_index = 0
-    while current_threshold_index != blocs.shape[0]:
-        current_blocs = blocs[current_threshold_index:]
+    for index, bloc in enumerate(blocs):
+        receiving_bloc_index = _find_bigger_bloc(
+            blocs,
+            bloc,
+            index,
+            tower_height
+        )
 
-        for index, bloc in enumerate(current_blocs):
-            receiving_bloc_index = _find_bigger_bloc(
-                current_blocs,
-                bloc,
-                index,
-                tower_height[current_threshold_index:]
-            )
+        if receiving_bloc_index is not None:
+            abs_bloc_idx = index
+            abs_receiving_bloc_idx = receiving_bloc_index
 
-            if receiving_bloc_index is not None:
-                abs_bloc_idx = current_threshold_index + index
-                abs_receiving_bloc_idx = current_threshold_index + receiving_bloc_index
-
-                print(
-                    f"Bloc {abs_bloc_idx} will be added to the tower sequence {tower_sequence[abs_receiving_bloc_idx]} of receiving index {abs_receiving_bloc_idx}")
-
-                tower_height[abs_bloc_idx] = tower_height[abs_receiving_bloc_idx] + bloc[0]
-                tower_sequence[abs_bloc_idx] = tower_sequence[abs_receiving_bloc_idx] + [bloc]
-            else:
-                next_threshold_index = current_threshold_index + index
-
-        current_threshold_index = next_threshold_index + 1
+            tower_height[abs_bloc_idx] = tower_height[abs_receiving_bloc_idx] + bloc[0]
+            tower_sequence[abs_bloc_idx] = tower_sequence[abs_receiving_bloc_idx] + [bloc]
 
     tallest_tower_base_index = arg_max(tower_height)
 
@@ -59,7 +48,7 @@ def _order_blocs_by_decreasing_surface(blocs):
     return blocs[np.argsort(surface_blocs)[::-1]]
 
 
-def _find_bigger_bloc(blocs, bloc, index, current_tower_heights):
+def _find_bigger_bloc(blocs, bloc, index, tower_heights):
     bigger_or_equal_surface_blocs = blocs[:index]
 
     bigger_surface_bloc_indexes = np.argwhere(
@@ -70,9 +59,9 @@ def _find_bigger_bloc(blocs, bloc, index, current_tower_heights):
     if bigger_surface_bloc_indexes.shape[0] == 0:
         return None
 
-    highest_tower_idx = max(
+    return max(
         bigger_surface_bloc_indexes,
-        key=lambda i: current_tower_heights[i]
+        key=lambda i: tower_heights[i]
     )
 
-    return highest_tower_idx
+    # return np.argmax(tower_heights[bigger_surface_bloc_indexes])
