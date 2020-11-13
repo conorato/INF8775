@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./executable "$@"
+python prototype/main.py "$@"

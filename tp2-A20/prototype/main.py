@@ -57,6 +57,8 @@ def main(algo, file, print_path=False, print_height=False, print_time=False):
     elif algo == "tabou":
         path, height, total_time = execute_tabou(blocs)
 
+    height = np.array(path)[:, 0].sum()
+
     if print_time:
         print(total_time * 1000)  # display in ms
 
@@ -64,9 +66,7 @@ def main(algo, file, print_path=False, print_height=False, print_time=False):
         print(*path, sep='\n')
 
     if print_height:
-        print(np.array(path)[:, 0].sum())
-
-    return time
+        print(height)
 
 
 if __name__ == '__main__':
