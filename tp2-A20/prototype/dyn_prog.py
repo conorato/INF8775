@@ -1,7 +1,6 @@
 import time
 import numpy as np
-
-from utils import is_stricly_smaller, get_surface, arg_max
+from numba import jit
 
 
 def execute_dyn_prog(blocs):
@@ -15,6 +14,7 @@ def execute_dyn_prog(blocs):
     return path, height, total_time
 
 
+@jit(nopython=True)
 def _execute_dyn_prog(blocs):
     """finds sequence of blocs in order to get the biggest tower height"""
 
@@ -31,7 +31,7 @@ def _execute_dyn_prog(blocs):
             tower_height
         )
 
-        if receiving_bloc_index is not None:
+        if receiving_bloc_index != -1:
             tower_height[index] = tower_height[receiving_bloc_index] + bloc[0]
             tower_sequence[index] = tower_sequence[receiving_bloc_index] + [bloc]
 
@@ -40,11 +40,13 @@ def _execute_dyn_prog(blocs):
     return tower_sequence[tallest_tower_base_index]
 
 
+@jit(nopython=True)
 def _order_blocs_by_decreasing_surface(blocs):
     surface_blocs = blocs[:, 1] * blocs[:, 2]
     return blocs[np.argsort(surface_blocs)[::-1]]
 
 
+@jit(nopython=True)
 def _find_tallest_possible_tower(blocs, bloc, index, tower_heights):
     bigger_or_equal_surface_blocs = blocs[:index]
 
@@ -54,7 +56,7 @@ def _find_tallest_possible_tower(blocs, bloc, index, tower_heights):
     ).flatten()
 
     if bigger_surface_bloc_indexes.shape[0] == 0:
-        return None
+        return -1
 
     # we find the index of the bigger_surface_bloc_indexes which has the tallest tower
     # and we return the corresponding element of bigger_surface_bloc_indexes
