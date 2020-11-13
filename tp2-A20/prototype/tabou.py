@@ -61,18 +61,38 @@ def _get_candidate(candidates, current_solution, current_solution_height):
     return best_candidate, best_candidate_tower_height
 
 
-def _get_height_to_remove(current_solution, candidate):
-    """step 1: needs to be linear time"""
+def _get_blocs_to_remove(current_solution, candidate):
+    """returns array of size len(current_solution) with True at positions of blocs to remove"""
     bigger_width_indexes = current_solution[:, 1] >= candidate[1]
     bigger_depth_indexes = current_solution[:, 2] > candidate[2]
 
-    return ((bigger_width_indexes ^ bigger_depth_indexes)*current_solution[:, 0]).sum()
+    return bigger_width_indexes ^ bigger_depth_indexes
+
+
+def _get_height_to_remove(current_solution, candidate):
+    """step 1: needs to be linear time"""
+    height_to_remove = (
+        _get_blocs_to_remove(current_solution, candidate) *
+        current_solution[:, 0]
+    ).sum()
+
+    return height_to_remove
 
 
 def _update_solution(candidate, current_solution):
     """step 2: updates current solution and finds which blocs are incompatible with new candidate"""
     updated_solution = current_solution.copy()
     imcompatible_blocs = []
+
+    blocs_to_remove = _get_blocs_to_remove(current_solution, candidate)
+
+    # remove imcompatible
+    imcompatible_blocs = updated_solution[blocs_to_remove]
+    updated_solution = updated_solution[~blocs_to_remove]
+    # insert new bloc
+    position_to_insert_bloc = np.where(blocs_to_remove)[0][0]
+    updated_solution = np.insert(
+        updated_solution, position_to_insert_bloc, candidate, axis=0)
 
     return updated_solution, imcompatible_blocs
 
