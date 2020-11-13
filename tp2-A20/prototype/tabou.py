@@ -113,8 +113,6 @@ def _update_tabous(new_tabous, tabous, candidates):
         updated_tabous)
 
     if len(candidates_to_reinsert) != 0:
-        print('candidates: ', candidates)
-        print('candidates_to_reinsert: ', candidates_to_reinsert)
         candidates = np.vstack((candidates, candidates_to_reinsert))
 
     updated_tabous = _add_new_tabous(new_tabous, updated_tabous)

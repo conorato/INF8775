@@ -55,7 +55,9 @@ def main(algo, file, print_path=False, print_height=False, print_time=False):
         total_time = time.time() - s
 
     elif algo == "tabou":
-        path, height, total_time = execute_tabou(blocs)
+        s = time.time()
+        path = execute_tabou(blocs)
+        total_time = time.time() - s
 
     height = np.array(path)[:, 0].sum()
 
