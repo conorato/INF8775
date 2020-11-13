@@ -12,7 +12,7 @@ def execute_tabou(blocs):
 
 
 def _execute_tabou(candidates):
-    current_solution = np.array([])
+    current_solution = np.array([]).reshape(0, 3)
     current_solution_height = 0
     best_solution = None
     tabous = [[] for _ in range(MAX_TABOU)]
@@ -35,7 +35,8 @@ def _execute_tabou(candidates):
             candidates
         )
 
-        if is_current_solution_better(current_solution, best_solution):
+        # if is_current_solution_better(current_solution, best_solution):
+        if best_solution is None or current_solution_height > best_solution[:, 0].sum():
             best_solution = current_solution
             nb_iter_without_improvement = 0
         else:
@@ -50,7 +51,8 @@ def _get_candidate(candidates, current_solution, current_solution_height):
     best_candidate_tower_height = 0
 
     for candidate in candidates:
-        height_to_remove = _get_height_to_remove(current_solution, candidate)
+        height_to_remove = _get_height_to_remove(
+            current_solution, candidate)
         candidate_tower_height = (
             current_solution_height + candidate[0] - height_to_remove
         )
@@ -91,7 +93,9 @@ def _update_solution(candidate, current_solution):
     imcompatible_blocs = updated_solution[blocs_to_remove]
     updated_solution = updated_solution[~blocs_to_remove]
     # insert new bloc
-    position_to_insert_bloc = np.where(blocs_to_remove)[0][0]
+    position_to_insert_bloc = np.where(blocs_to_remove)[0]
+    position_to_insert_bloc = position_to_insert_bloc[0] if len(
+        position_to_insert_bloc) != 0 else 0
     updated_solution = np.insert(
         updated_solution, position_to_insert_bloc, candidate, axis=0)
 
@@ -107,13 +111,19 @@ def _update_tabous(new_tabous, tabous, candidates):
 
     updated_tabous, candidates_to_reinsert = _update_time_to_live(
         updated_tabous)
+
+    if len(candidates_to_reinsert) != 0:
+        print('candidates: ', candidates)
+        print('candidates_to_reinsert: ', candidates_to_reinsert)
+        candidates = np.vstack((candidates, candidates_to_reinsert))
+
     updated_tabous = _add_new_tabous(new_tabous, updated_tabous)
 
-    return updated_tabous, updated_candidates
+    return updated_tabous, candidates
 
 
 def _update_time_to_live(updated_tabous):
-    candidates_to_reinsert = updated_tabous[0]
+    candidates_to_reinsert = np.array(updated_tabous[0]).reshape(-1, 3)
     updated_tabous = updated_tabous[1:]
     updated_tabous.append([])
 
@@ -122,7 +132,7 @@ def _update_time_to_live(updated_tabous):
 
 def _add_new_tabous(new_tabous, tabous):
     for new_tabou in new_tabous:
-        new_tabou_time_to_live = np.random.randint(MIN_TABOU, MAX_TABOU+1)
+        new_tabou_time_to_live = np.random.randint(MIN_TABOU, MAX_TABOU)
         tabous[new_tabou_time_to_live].append(new_tabous)
     return tabous
 
