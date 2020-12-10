@@ -5,6 +5,8 @@ import math
 
 import numpy as np
 
+from invalid_naive_algo import invalid_naive_algo
+
 
 def get_options():
     parser = argparse.ArgumentParser()
@@ -87,18 +89,9 @@ def main(nb_district, municipalities_map_path, display_solution=False):
     municipalities_map = read_municipalities_map_from_file(
         municipalities_map_path)
 
-    districts = [[] for _ in range(nb_district)]
     bounds = get_upper_lower_distrinct_bounds(municipalities_map, nb_district)
 
-    current_district_idx = 0
-
-    for i in range(municipalities_map.shape[0]):
-        for j in range(municipalities_map.shape[1]):
-            if current_district_idx < bounds[0][1] and len(districts[current_district_idx]) >= bounds[0][0]:
-                current_district_idx += 1
-            elif current_district_idx >= bounds[0][1] and len(districts[current_district_idx]) >= bounds[1][0]:
-                current_district_idx += 1
-            districts[current_district_idx].append((i, j))
+    districts = invalid_naive_algo(municipalities_map, bounds, nb_district)
 
     if display_solution:
         display_districts(districts)
