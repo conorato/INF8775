@@ -66,6 +66,23 @@ def display_districts(districts):
                 for municipality in district], '\n')
 
 
+def print_green_victories(districts, municipalities_map):
+    district_won_by_green = 0
+    for district in districts:
+        x_municipalities = [municipality_idx[0]
+                            for municipality_idx in district]
+        y_municipalities = [municipality_idx[1]
+                            for municipality_idx in district]
+        votes_per_municipalities = municipalities_map[x_municipalities,
+                                                      y_municipalities]
+        total_votes_for_green = np.sum(votes_per_municipalities)
+        total_votes = 100 * len(district)
+        if (total_votes_for_green / total_votes > 0.5):
+            district_won_by_green += 1
+
+    print(district_won_by_green)
+
+
 def main(nb_district, municipalities_map_path, display_solution=False):
     municipalities_map = read_municipalities_map_from_file(
         municipalities_map_path)
@@ -86,7 +103,7 @@ def main(nb_district, municipalities_map_path, display_solution=False):
     if display_solution:
         display_districts(districts)
     else:
-        print(10)
+        print_green_victories(districts, municipalities_map)
 
 
 if __name__ == '__main__':
