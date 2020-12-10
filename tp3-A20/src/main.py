@@ -1,6 +1,7 @@
 import argparse
 import random
 import sys
+import math
 
 import numpy as np
 
@@ -28,10 +29,64 @@ def read_municipalities_map_from_file(municipalities_map_path):
     return np.array(municipalities)
 
 
+def get_upper_lower_distrinct_bounds(municipalities_map, nb_district):
+    nb_municipalities_per_district = municipalities_map.size / nb_district
+    lower_bound = math.floor(nb_municipalities_per_district)
+    upper_bound = math.ceil(nb_municipalities_per_district)
+    upper_bound_districts = 0
+    lower_bound_districts = 0
+
+    if (nb_municipalities_per_district - lower_bound > 0.5):
+        upper_bound_districts = (
+            upper_bound - nb_municipalities_per_district)
+        lower_bound_districts = (
+            1 - upper_bound_districts)
+    else:
+        lower_bound_districts = (
+            upper_bound - nb_municipalities_per_district)
+        upper_bound_districts = (
+            1 - lower_bound_districts)
+
+    lower_bound_districts *= nb_district
+    lower_bound_districts = round(lower_bound_districts)
+    upper_bound_districts *= nb_district
+    upper_bound_districts = round(upper_bound_districts)
+
+    print(
+        f'lower_bound_districts: {lower_bound_districts}, of district size: {lower_bound}')
+    print(
+        f'upper_bound_districts: {upper_bound_districts}, of district size: {upper_bound}')
+
+    return [(lower_bound, lower_bound_districts), (upper_bound, upper_bound_districts)]
+
+
+def display_districts(districts):
+    for district in districts:
+        print(*[" ".join(map(str, municipality))
+                for municipality in district], '\n')
+
+
 def main(nb_district, municipalities_map_path, display_solution=False):
     municipalities_map = read_municipalities_map_from_file(
         municipalities_map_path)
-    print(municipalities_map)
+
+    districts = [[] for _ in range(nb_district)]
+    bounds = get_upper_lower_distrinct_bounds(municipalities_map, nb_district)
+
+    current_district_idx = 0
+
+    for i in range(municipalities_map.shape[0]):
+        for j in range(municipalities_map.shape[1]):
+            if current_district_idx < bounds[0][1] and len(districts[current_district_idx]) >= bounds[0][0]:
+                current_district_idx += 1
+            elif current_district_idx >= bounds[0][1] and len(districts[current_district_idx]) >= bounds[1][0]:
+                current_district_idx += 1
+            districts[current_district_idx].append((i, j))
+
+    if display_solution:
+        display_districts(districts)
+    else:
+        print(10)
 
 
 if __name__ == '__main__':
