@@ -9,29 +9,43 @@ def initialize_solution(municipalities_map, bounds, nb_district):
 
 
 def _init_solution_k_means(municipalities_map, bounds, nb_district):
+    MAX_CENTER_REASSIGNEMENT = nb_district
+
     # transform to 1D
-    is_first_iteration = True
     municipalities_map = municipalities_map.copy()
     municipalities_map_shape = municipalities_map.shape
     municipalities_map = municipalities_map.reshape(-1)
-    unassigned_municipalities = set(range(municipalities_map.shape[0]))
 
-    # choose k centers from the dataset at random
-    centers = _choose_random_centers(unassigned_municipalities, nb_district)
-    unassigned_municipalities -= set(centers)
+    is_current_solution_valid = False
+    while not is_current_solution_valid:
+        unassigned_municipalities = set(range(municipalities_map.shape[0]))
 
-    # for each point, compute the distance to its nearest cluster center
-    while is_first_iteration or not is_valid(districts, municipalities_map_shape):
-        districts = _assign_municipalities_according_centers(
-            unassigned_municipalities, centers, nb_district, bounds, municipalities_map_shape)
-        is_first_iteration = False
-        centers = _update_centers(districts, municipalities_map_shape)
-        print('updated centers to: ', centers)
+        # choose k centers from the dataset at random
+        centers = _choose_random_centers(
+            unassigned_municipalities, nb_district)
+        print('initial centers:', centers)
+        unassigned_municipalities -= set(centers)
+        old_centers = None
+        nb_center_reassignements = 0
+
+        while (not is_current_solution_valid) and has_centers_changed(centers, old_centers) and nb_center_reassignements < MAX_CENTER_REASSIGNEMENT:
+            districts = _assign_municipalities_according_centers(
+                unassigned_municipalities, centers, nb_district, bounds, municipalities_map_shape)
+            is_current_solution_valid = is_valid(
+                districts, municipalities_map_shape)
+            old_centers = centers
+            centers = _update_centers(districts, municipalities_map_shape)
+            nb_center_reassignements += 1
+
     return [
         [convert_index_to_position(idx, municipalities_map_shape)
          for idx in district]
         for district in districts
     ]
+
+
+def has_centers_changed(centers, old_centers):
+    return old_centers == None or old_centers != centers
 
 
 def _choose_random_centers(unassigned_municipalities, nb_district):
