@@ -6,6 +6,7 @@ import math
 import numpy as np
 
 from invalid_naive_algo import invalid_naive_algo
+from initialize_solution import initialize_solution
 
 
 def get_options():
@@ -54,29 +55,29 @@ def get_upper_lower_distrinct_bounds(municipalities_map, nb_district):
     upper_bound_districts *= nb_district
     upper_bound_districts = round(upper_bound_districts)
 
-    print(
-        f'lower_bound_districts: {lower_bound_districts}, of district size: {lower_bound}')
-    print(
-        f'upper_bound_districts: {upper_bound_districts}, of district size: {upper_bound}')
+    # print(
+    #     f'lower_bound_districts: {lower_bound_districts}, of district size: {lower_bound}')
+    # print(
+    #     f'upper_bound_districts: {upper_bound_districts}, of district size: {upper_bound}')
 
     return [(lower_bound, lower_bound_districts), (upper_bound, upper_bound_districts)]
 
 
 def display_districts(districts):
     for district in districts:
-        print(*[" ".join(map(str, municipality))
-                for municipality in district], '\n')
+        print(*[f'{municipality[1]} {municipality[0]}' for municipality in district])
 
 
 def print_green_victories(districts, municipalities_map):
     district_won_by_green = 0
+    print(municipalities_map.shape)
     for district in districts:
         x_municipalities = [municipality_idx[0]
                             for municipality_idx in district]
         y_municipalities = [municipality_idx[1]
                             for municipality_idx in district]
-        votes_per_municipalities = municipalities_map[x_municipalities,
-                                                      y_municipalities]
+        votes_per_municipalities = municipalities_map[y_municipalities,
+                                                      x_municipalities]
         total_votes_for_green = np.sum(votes_per_municipalities)
         total_votes = 100 * len(district)
         if (total_votes_for_green / total_votes > 0.5):
@@ -91,7 +92,9 @@ def main(nb_district, municipalities_map_path, display_solution=False):
 
     bounds = get_upper_lower_distrinct_bounds(municipalities_map, nb_district)
 
-    districts = invalid_naive_algo(municipalities_map, bounds, nb_district)
+    # districts = invalid_naive_algo(municipalities_map, bounds, nb_district)
+    districts = initialize_solution(municipalities_map, bounds, nb_district)
+    # print(len(districts))
 
     if display_solution:
         display_districts(districts)
