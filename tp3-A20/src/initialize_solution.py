@@ -15,16 +15,13 @@ def _init_solution_k_means(municipalities_map, bounds, nb_district):
     municipalities_map = municipalities_map.copy()
     municipalities_map_shape = municipalities_map.shape
     municipalities_map = municipalities_map.reshape(-1)
+    unassigned_municipalities = set(range(municipalities_map.shape[0]))
 
     is_current_solution_valid = False
     while not is_current_solution_valid:
-        unassigned_municipalities = set(range(municipalities_map.shape[0]))
-
         # choose k centers from the dataset at random
         centers = _choose_random_centers(
             unassigned_municipalities, nb_district)
-        print('initial centers:', centers)
-        unassigned_municipalities -= set(centers)
         old_centers = None
         nb_center_reassignements = 0
 
@@ -56,10 +53,8 @@ def _choose_random_centers(unassigned_municipalities, nb_district):
 def _assign_municipalities_according_centers(unassigned_municipalities, centers, nb_district, bounds, shape):
     districts = [[] for _ in range(nb_district)]
 
-    for district, center in zip(districts, centers):
-        district.append(center)
-
     for municipality in unassigned_municipalities:
+        # print([len(district) for district in districts], municipality)
         district_indexes_ordered_by_dist = np.argsort([
             distance(municipality, center, shape) for center in centers
         ])
