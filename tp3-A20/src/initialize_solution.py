@@ -1,5 +1,6 @@
 import numpy as np
 from random import sample
+import time
 
 from utils import convert_index_to_position, distance, is_district_full, check_inner_district_distances
 
@@ -9,7 +10,7 @@ def initialize_solution(municipalities_map, bounds, nb_district):
 
 
 def _init_solution_k_means(municipalities_map, bounds, nb_district):
-    MAX_CENTER_REASSIGNEMENT = nb_district
+    MAX_CENTER_REASSIGNEMENT = nb_district*4
 
     # transform to 1D
     municipalities_map = municipalities_map.copy()
@@ -24,6 +25,7 @@ def _init_solution_k_means(municipalities_map, bounds, nb_district):
             unassigned_municipalities, nb_district)
         old_centers = None
         nb_center_reassignements = 0
+        print('centers: ', centers)
 
         while (not is_current_solution_valid) and has_centers_changed(centers, old_centers) and nb_center_reassignements < MAX_CENTER_REASSIGNEMENT:
             districts = _assign_municipalities_according_centers(
@@ -53,8 +55,7 @@ def _choose_random_centers(unassigned_municipalities, nb_district):
 def _assign_municipalities_according_centers(unassigned_municipalities, centers, nb_district, bounds, shape):
     districts = [[] for _ in range(nb_district)]
 
-    for municipality in unassigned_municipalities:
-        # print([len(district) for district in districts], municipality)
+    for municipality in sample(unassigned_municipalities, len(unassigned_municipalities)):
         district_indexes_ordered_by_dist = np.argsort([
             distance(municipality, center, shape) for center in centers
         ])

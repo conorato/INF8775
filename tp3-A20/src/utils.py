@@ -7,10 +7,10 @@ def convert_index_to_position(idx, shape):
 
 
 def distance(idx_1, idx_2, shape):
-    point_1 = np.array(convert_index_to_position(idx_1, shape))
-    point_2 = np.array(convert_index_to_position(idx_2, shape))
+    point_1 = convert_index_to_position(idx_1, shape)
+    point_2 = convert_index_to_position(idx_2, shape)
 
-    return np.sum(np.abs(point_1 - point_2))
+    return abs(point_1[0] - point_2[0]) + abs(point_1[1] - point_2[1])
 
 
 def is_district_full(district_idx, districts, bounds):

@@ -56,10 +56,10 @@ def get_upper_lower_distrinct_bounds(municipalities_map, nb_district):
     upper_bound_districts *= nb_district
     upper_bound_districts = round(upper_bound_districts)
 
-    print(
-        f'lower_bound_districts: {lower_bound_districts}, of district size: {lower_bound}')
-    print(
-        f'upper_bound_districts: {upper_bound_districts}, of district size: {upper_bound}')
+    # print(
+    #     f'lower_bound_districts: {lower_bound_districts}, of district size: {lower_bound}')
+    # print(
+    #     f'upper_bound_districts: {upper_bound_districts}, of district size: {upper_bound}')
 
     return [(lower_bound, lower_bound_districts), (upper_bound, upper_bound_districts)]
 
