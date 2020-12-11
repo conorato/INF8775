@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 
@@ -18,3 +19,14 @@ def is_district_full(district_idx, districts, bounds):
         return len(districts[district_idx]) == bounds[0][0]
 
     return len(districts[district_idx]) == bounds[1][0]
+
+
+def check_inner_district_distances(solution, n, m):
+    """Extracted from check_sol.py"""
+    for (district, district_index) in zip(solution, range(len(solution))):
+        for precinct1_index in range(len(district) - 1):
+            for precinct2_index in range(precinct1_index + 1, len(district)):
+                if (abs(district[precinct1_index][0] - district[precinct2_index][0]) + abs(district[precinct1_index][1] - district[precinct2_index][1])) > math.ceil(n/2/m):
+                    return (district_index, precinct1_index, precinct2_index)
+
+    return 0

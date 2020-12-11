@@ -1,7 +1,7 @@
 import numpy as np
 from random import sample
 
-from utils import convert_index_to_position, distance, is_district_full
+from utils import convert_index_to_position, distance, is_district_full, check_inner_district_distances
 
 
 def initialize_solution(municipalities_map, bounds, nb_district):
@@ -10,7 +10,7 @@ def initialize_solution(municipalities_map, bounds, nb_district):
 
 def _init_solution_k_means(municipalities_map, bounds, nb_district):
     # transform to 1D
-    new_centers = None
+    is_first_iteration = True
     municipalities_map = municipalities_map.copy()
     municipalities_map_shape = municipalities_map.shape
     municipalities_map = municipalities_map.reshape(-1)
@@ -21,10 +21,10 @@ def _init_solution_k_means(municipalities_map, bounds, nb_district):
     unassigned_municipalities -= set(centers)
 
     # for each point, compute the distance to its nearest cluster center
-    while new_centers == None or old_centers != centers:
+    while is_first_iteration or not is_valid(districts, municipalities_map_shape):
         districts = _assign_municipalities_according_centers(
             unassigned_municipalities, centers, nb_district, bounds, municipalities_map_shape)
-        old_centers = centers
+        is_first_iteration = False
         centers = _update_centers(districts, municipalities_map_shape)
         print('updated centers to: ', centers)
     return [
@@ -68,3 +68,11 @@ def _get_center(district, shape):
         municipality, shape) for municipality in district]
     center_2d = np.round(np.mean(positions, axis=0))
     return int(center_2d[0] * shape[0] + center_2d[1])
+
+
+def is_valid(districts, shape):
+    positions = [[convert_index_to_position(
+        municipality, shape) for municipality in district] for district in districts]
+
+    return check_inner_district_distances(
+        positions, shape[0]*shape[1], len(districts)) == 0
