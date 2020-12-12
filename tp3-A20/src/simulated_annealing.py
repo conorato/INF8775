@@ -37,7 +37,7 @@ def optimize_solution(districts, municipalities_map, display_solution):
 
         if current_green_victories > best_green_victories:
             best_green_victories = current_green_victories
-            print('\n')
+            print('')
             display(districts, municipalities_map, display_solution)
 
         temperature *= TEMPERATURE_DECREASE

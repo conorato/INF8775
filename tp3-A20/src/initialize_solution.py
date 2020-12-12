@@ -10,7 +10,7 @@ def initialize_solution(municipalities_map, bounds, nb_district):
 
 
 def _init_solution_k_means(municipalities_map, bounds, nb_district):
-    MAX_CENTER_REASSIGNEMENT = nb_district*4
+    MAX_CENTER_REASSIGNEMENT = nb_district
 
     # transform to 1D
     municipalities_map = municipalities_map.copy()
