@@ -12,8 +12,9 @@ def display(districts, municipalities_map, display_solution):
 
 def _display_districts(districts):
     for district in districts:
-        print(*[f'{municipality[1]} {municipality[0]}' for municipality in district])
+        print(
+            *[f'{municipality[1]} {municipality[0]}' for municipality in district], flush=True)
 
 
 def _print_green_victories(districts, municipalities_map):
-    print(get_green_victories(districts, municipalities_map))
+    print(get_green_victories(districts, municipalities_map), flush=True)
