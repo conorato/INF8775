@@ -19,13 +19,13 @@ def _init_solution_k_means(municipalities_map, bounds, nb_district):
     unassigned_municipalities = set(range(municipalities_map.shape[0]))
 
     is_current_solution_valid = False
+    i = 0
     while not is_current_solution_valid:
         # choose k centers from the dataset at random
         centers = _choose_random_centers(
             unassigned_municipalities, nb_district)
         old_centers = None
         nb_center_reassignements = 0
-        print('centers: ', centers)
 
         while (not is_current_solution_valid) and has_centers_changed(centers, old_centers) and nb_center_reassignements < MAX_CENTER_REASSIGNEMENT:
             districts = _assign_municipalities_according_centers(
@@ -35,7 +35,7 @@ def _init_solution_k_means(municipalities_map, bounds, nb_district):
             old_centers = centers
             centers = _update_centers(districts, municipalities_map_shape)
             nb_center_reassignements += 1
-
+        i += 1
     return [
         [convert_index_to_position(idx, municipalities_map_shape)
          for idx in district]
